@@ -1,0 +1,44 @@
+---
+title: "WriteUp"
+output: html_document
+---
+Dataset from
+Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, 
+H. Qualitative Activity Recognition of Weight Lifting Exercises. 
+Proceedings of 4th International Conference in Cooperation with 
+SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.
+Read more: http://groupware.les.inf.puc-rio.br/har#ixzz3uJG8yOEC
+
+
+Begin by providing remote urls to get the data from and setting working directory 
+```{r}
+train_url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+test_url = "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv" 
+
+directory = "."
+setwd(directory)
+trainfile = "train.csv"
+testfile = "test.csv"
+train_dest = paste(directory, trainfile,sep ="/")
+test_dest = paste(directory, testfile,sep ="/")
+# if files do not exist then download them from url
+if (!file.exists(train_dest) | !file.exists(test_dest)){
+method = "curl"  
+download.file(train_url,destfile = train_dest,method = method)
+download.file(test_url,destfile = test_dest,method = method)
+}
+```
+Read in "raw" datasets
+
+```{r}
+train_raw <- read.csv(train_dest)
+test_raw <-read.csv(test_dest)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
