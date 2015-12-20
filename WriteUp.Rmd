@@ -12,8 +12,8 @@ Read more: http://groupware.les.inf.puc-rio.br/har#ixzz3uJG8yOEC
 We start by loading caret and other potentially useful packages
 ```{r}
 library(caret)
-library(ggplot2)
-library(RColorBrewer)
+library(corrplot)
+
 
 ```
 
@@ -87,15 +87,18 @@ We thus construct the correlation matrix and set its diagonal to 0
 corrmat = abs(cor(train_raw[,-53]))
 diag(corrmat) = 0
 ```
+We visualize the matrix and notice that there is some appreciable
+correlation between variables which is a hint that the dimensionality
+can be further reduced
+```{r}
+corrplot(corrmat,method = "color", tl.cex = 0.5)
+```
 
-We now check if any pairs of variables has a correlation of 0.8 or higher.
-If yes, then principal component analysis is performed and only those
+Given the presence on non-negligible correlations we perform
+principal component analysis and retain only those
 variables contributing to 95% of the variance are retained.
 ```{r}
-if (length(which(corrmat>0.8,arr.ind = T)) == 0){
-  train = train_raw
-  test = test_raw
-  } else{# perform PCA analysis
+
   
   preobj = preProcess(train_raw[,-53],method = "pca", thresh = 0.95)
   trainPC = predict(preobj,train_raw[,-53])
@@ -104,7 +107,7 @@ if (length(which(corrmat>0.8,arr.ind = T)) == 0){
   train = trainPC
   test = testPC
  
-  }
+  
 ncol(train)
 ncol(test)
 
@@ -217,8 +220,9 @@ predict1 = predict(modFit1,test_cv)
 confusionMatrix(classe_test_cv,predict1)
 ```
 
-Having obtained an overall accuracy of 97%, and taking
-into accounttime/computational limitations, I believe
+Having obtained an estimated accuracy of 97% and out-of-sample error of 3%, 
+and taking
+into account time/computational limitations, I believe
 the algorithm performs sufficiently good to proceed to prediction.
 I therefore apply the fitted model to the test set and 
 write the answers in separate files
@@ -246,10 +250,3 @@ pml_write_files(answers)
 
 
 
-You can also embed plots, for example:
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
